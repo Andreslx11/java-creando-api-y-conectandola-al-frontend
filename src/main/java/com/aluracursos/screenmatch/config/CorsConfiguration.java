@@ -24,7 +24,7 @@ public class CorsConfiguration implements WebMvcConfigurer {
 
 
 
-    /* Modelo 2.3.5
+    /* Modelo 2.3.5 ==> SerieService 3.1.1
      * esto http://127.0.0.1:5500  se busca la que es para nosotros en  inspecionar en herramientas del desarrollador
      *  en la pagina de nuestro frontende, ese que inicializamos con live server,
      *

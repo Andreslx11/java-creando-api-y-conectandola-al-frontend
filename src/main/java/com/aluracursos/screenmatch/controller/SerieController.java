@@ -1,13 +1,16 @@
 package com.aluracursos.screenmatch.controller;
 
 import com.aluracursos.screenmatch.dto.SerieDTO;
-import com.aluracursos.screenmatch.repository.SerieRepository;
+
+import com.aluracursos.screenmatch.service.SerieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 /*Modelo 1.3.1
 esto es siguiendo el modelo MVC que en este paso es una clase con anotación controler
@@ -18,12 +21,24 @@ IMPORTANTE CADA DATO TRATADO TIENE QUE TENER UN CONTROLER EN ESTE CASO SerieCont
 
 se usan anotaciones de spring y como estamos trabajando  nuestra app con el modelo Rest para
 eso la anotación @RestController para identificar que estamos trabajando con ese modelo */
+/*Modulo 3.3.3  ==<3.3.4   @RequestMapping esta anotaccion  es como tenemos varios sufijos en URL de series
+* como    /series/top5    o /series/lanzaminetos y para anotarlas asi @GetMapping("/series/top5")
+* en cada anotaciom la usamos para que de esa java sepa que sevan despreder sufijos
+* y ya en la anotación @GetMapping("/top5")  seria solo sufijo*/
 @RestController
+@RequestMapping("/series")
 public class SerieController {
 
     /*Modulo 2.1.0  necesitamos inyectar esa dependencia de nuestro repositorio */
-    @Autowired
-    private SerieRepository repository;
+    /*Modulo 3.1.4 ==> 3.1.5// se comenta y se lleva para SerieService para evitar que Serie comtroller
+     * haga tantas cosas*/
+//    @Autowired
+//    private SerieRepository repository;
+
+    // Modulo 3.1.6   //inyecion dependencia SerieService
+     @Autowired
+     private SerieService servicio;
+
 
     /*modelo 1.3.2   @GetMapping para mapear obter datos de una ruta en especifico
    aquí es get quiere decir para mapiar los datos para obtenerlos
@@ -39,10 +54,10 @@ public class SerieController {
    mensaje
    */
     /*Modelo 2.1.1 se comenta era ejemplo */
-//    @GetMapping("/series")
-//    public String mostrarMensaje(){
-//        return "Este es mi primer mensaje en mi aplicación web";
-//    }
+   /* @GetMapping("/series")
+    public String mostrarMensaje(){
+        return "Este es mi primer mensaje en mi aplicación web";
+    }*/
 
     /*Modulo 2.1.2  lo queremos retornar e una lista de series al frontend */
     /*Modulo 2.1.2   ==> SerieDTO 2.2.1 se crea el package DTO, que es Data Transfer Object (Objeto de
@@ -74,33 +89,83 @@ public class SerieController {
     tendríamos como proteger los datos utilizando este DTO. Entonces,
     eso es lo que vamos a hacer a continuación, así que sigan aquí
     junto conmigo.*/
-    /*modulo 2.2.2 dr comenta por que ya queremo usar el record SerieDTO*/
-//    @GetMapping("/series")
-//    public List<Serie> obtnerTodasLasSeries(){
-//        return repository.findAll();
-//    }
+    /*modulo 2.2.2 se comenta por que ya queremo usar el record SerieDTO y Serie*/
+   /* @GetMapping("/series")
+    public List<Serie> obtnerTodasLasSeries(){
+        return repository.findAll();
+    }*/
 
     /*Modulo 2.2.2 ==> CorsConfiguration 2.3.3
-    * findALl() nos devuelve una lista del tipo dato Serie pero lo que ahora queremos
-    * es que retorne una lista de tipo dato SerieDTO para eso usamos stream(), y los get recordar son
-    * los automaticos que genera el record SerieDTO por campos del mismo,
-    * map para convertir cada  serie en una nueva SerieDTO
-    *
-    * ==> RUN y ver en navegador localhost:8081/series    si se esta cargando los datos se como un  tipo json*/
-    @GetMapping("/series")
-    public List<SerieDTO> obtnerTodasLasSeries(){
-        return repository.findAll().stream()
-                .map(s -> new SerieDTO(s.getTitulo(), s.getTotalTemporadas(), s.getEvaluacion(),
-                        s.getPoster(),s.getGenero() ,s.getActores(), s.getSinopsis()))
-                .collect(Collectors.toList());
+     * findALl() nos devuelve una lista del tipo dato Serie pero lo que ahora queremos
+     * es que retorne una lista de tipo dato SerieDTO para eso usamos stream(), y los get recordar son
+     * los automaticos que genera el record SerieDTO por campos del mismo,
+     * map para convertir cada  serie en una nueva SerieDTO
+     *
+     * ==> RUN y ver en navegador localhost:8081/series    si se esta cargando los datos se como un  tipo json*/
+
+
+    /*Modulo 3.1.3 ==> 3.1.4// se comenta y se lleva para SerieService para evitar que Serie comtroller
+     * haga tantas cosas , bajo se vuelve crear pero ya con lo que retorna de Serieservice 3.1.6 */
+//    @GetMapping("/series")
+//    public List<SerieDTO> obtnerTodasLasSeries(){
+//        return repository.findAll().stream()
+//                .map(s -> new SerieDTO(s.getTitulo(), s.getTotalTemporadas(), s.getEvaluacion(),
+//                        s.getPoster(),s.getGenero() ,s.getActores(), s.getSinopsis()))
+//                .collect(Collectors.toList());
+//    }
+
+    /*Modulo 3.1.7 ==> 3.2.1 /
+     para  que nos retorne debe crear primero la inyecion de depencias para
+     * SerieService se creo en 3.1.6
+
+     * Sí, para utilizar un método de una clase marcada con la anotación @Service en otra clase,
+     *  generalmente se utiliza la inyección de dependencias
+
+     // */
+    /*Modulo 3.3.4 como ya series se coloco para ser padron por defecto
+    * para lo sufijos lo quitamos*/
+//    @GetMapping("/series")
+    @GetMapping()
+    public List<SerieDTO> obtnerTodasLasSeries() {
+        return servicio.obtnerTodasLasSeries();
+    }
+
+  /*Modulo 3.2.1 ==> SerieService 3.2.2
+    recordar que esas direcciones como /series/top5 son las que nos aparecen en nuestro frontend
+    como el metodo obtenerTop() no exitia le pedimos inteelij que lo creara en SerieService
+     */
+    @GetMapping("/top5")
+    public List<SerieDTO> obtenerTop5(){
+           return  servicio.obtenerTop5();
     }
 
 
-//    /*como todo estaba cargado, se hizo este metodo para ensayar la configurancio
-//      del   spring-boot-devtools la dependencia y ya configurada en setting para que el
-//      servidor tomcat autocargue los cambios y no se toque estar haciendo run*/
-//    @GetMapping("/inicio")
-//    public String muestraMensaje(){
-//        return "provando liveReloadind";
-//    }
+    @GetMapping("/lanzamientos")
+    public  List<SerieDTO> obtenerLanzaminetosMasRecientes(){
+        return servicio.obtenerLanzamientosMasRecientes();
+    }
+
+    /*Modulo 3.4.1 ==>( SerieService 3.4.2 para crear el metodo obtenerPorId())
+    como es un Id y eso varia no toca hacerlo para que sea de forma dinamica
+    paara eso en la anotación se usa "/{}" para indicar que es dimanico
+
+     @PathVariable anotación, que es la anotación path variable, que va a
+     indicar que eso va a venir ahí en ese header de nuestra URL o de
+     nuestra solicitud*/
+
+    @GetMapping("/{id}")
+    public SerieDTO obtenerPorId(@PathVariable long id){
+        return servicio.obtenerPorId(id);
+    }
+
+
+
+
+    /*como todo estaba cargado, se hizo este metodo para ensayar la configurancio
+      del   spring-boot-devtools la dependencia y ya configurada en setting para que el
+      servidor tomcat autocargue los cambios y no se toque estar haciendo run*/
+   /* @GetMapping("/inicio")
+    public String muestraMensaje(){
+        return "provando liveReloadind";
+    }*/
 }
