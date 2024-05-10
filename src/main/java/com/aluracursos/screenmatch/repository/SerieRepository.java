@@ -1,5 +1,6 @@
 package com.aluracursos.screenmatch.repository;
 
+import com.aluracursos.screenmatch.dto.EpisodioDTO;
 import com.aluracursos.screenmatch.model.Categoria;
 import com.aluracursos.screenmatch.model.Episodio;
 import com.aluracursos.screenmatch.model.Serie;
@@ -42,4 +43,30 @@ public interface SerieRepository extends JpaRepository<Serie,Long> {
     @Query("SELECT s FROM Serie s " + "JOIN s.episodios e " + "GROUP BY s " + "ORDER BY MAX(e.fechaDeLanzamiento) DESC LIMIT 5")
     List<Serie> lanzaminetosMasRecinetes();
 
+    /*Modulo 4.2
+    * se uso lenguaje consulta de java JPQL
+    * al crear el metodo con intellij nos da <EpisodioDTO> pero nosotros
+    * queremos retornar  Episodio nuestra Entity
+    *
+    * La razón por la que se cambió de EpisodioDTO a Episodio en la consulta JPQL es la siguiente:
+    *
+    Entidad vs DTO: Normalmente, cuando se trabaja con una API REST, se utiliza un DTO (Data Transfer Object)
+    *  para transferir los datos entre las capas de la aplicación. Los DTOs ayudan a mantener la separación de
+    *  responsabilidades y evitan exponer directamente las entidades a los controladores.
+    *
+    Consulta JPQL: Sin embargo, en este caso, la consulta JPQL se está ejecutando directamente en el repositorio,
+    *  que es la capa más cercana a la base de datos. Aquí, es más apropiado utilizar la entidad Episodio
+    * directamente, ya que la consulta está obteniendo los datos de la base de datos y no necesita realizar
+    * ninguna transformación adicional.
+    *
+    Eficiencia: Al utilizar la entidad Episodio en la consulta JPQL, se evita la necesidad de realizar una
+    * conversión adicional de EpisodioDTO a Episodio en el servicio. Esto hace que la consulta sea más
+    *  eficiente y evita pasos innecesarios en el procesamiento de los datos.
+    *
+    En resumen, el cambio de EpisodioDTO a Episodio en la consulta JPQL se debe a que, en este caso,
+    * es más apropiado trabajar directamente con la entidad de base de datos, ya que la consulta se está ejecutando
+    *  en el repositorio. Esto mejora la eficiencia y simplifica el proceso de obtención de los datos.
+        * */
+    @Query("SELECT e FROM Serie s JOIN s.episodios e WHERE s.id = :id AND e.temporada = :numeroTemporada")
+    List<Episodio> obtenerTemporadaPorNumeros(Long id, Long numeroTemporada);
 }

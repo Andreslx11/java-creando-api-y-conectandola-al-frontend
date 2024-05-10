@@ -1,5 +1,6 @@
 package com.aluracursos.screenmatch.controller;
 
+import com.aluracursos.screenmatch.dto.EpisodioDTO;
 import com.aluracursos.screenmatch.dto.SerieDTO;
 
 import com.aluracursos.screenmatch.service.SerieService;
@@ -36,8 +37,8 @@ public class SerieController {
 //    private SerieRepository repository;
 
     // Modulo 3.1.6   //inyecion dependencia SerieService
-     @Autowired
-     private SerieService servicio;
+    @Autowired
+    private SerieService servicio;
 
 
     /*modelo 1.3.2   @GetMapping para mapear obter datos de una ruta en especifico
@@ -123,25 +124,25 @@ public class SerieController {
 
      // */
     /*Modulo 3.3.4 como ya series se coloco para ser padron por defecto
-    * para lo sufijos lo quitamos*/
+     * para lo sufijos lo quitamos*/
 //    @GetMapping("/series")
     @GetMapping()
     public List<SerieDTO> obtnerTodasLasSeries() {
         return servicio.obtnerTodasLasSeries();
     }
 
-  /*Modulo 3.2.1 ==> SerieService 3.2.2
-    recordar que esas direcciones como /series/top5 son las que nos aparecen en nuestro frontend
-    como el metodo obtenerTop() no exitia le pedimos inteelij que lo creara en SerieService
-     */
+    /*Modulo 3.2.1 ==> SerieService 3.2.2
+      recordar que esas direcciones como /series/top5 son las que nos aparecen en nuestro frontend
+      como el metodo obtenerTop() no exitia le pedimos inteelij que lo creara en SerieService
+       */
     @GetMapping("/top5")
-    public List<SerieDTO> obtenerTop5(){
-           return  servicio.obtenerTop5();
+    public List<SerieDTO> obtenerTop5() {
+        return servicio.obtenerTop5();
     }
 
 
     @GetMapping("/lanzamientos")
-    public  List<SerieDTO> obtenerLanzaminetosMasRecientes(){
+    public List<SerieDTO> obtenerLanzaminetosMasRecientes() {
         return servicio.obtenerLanzamientosMasRecientes();
     }
 
@@ -154,18 +155,39 @@ public class SerieController {
      nuestra solicitud*/
 
     @GetMapping("/{id}")
-    public SerieDTO obtenerPorId(@PathVariable long id){
+    public SerieDTO obtenerPorId(@PathVariable long id) {
         return servicio.obtenerPorId(id);
     }
 
 
+    /* Modulo 4.1.1 ==>SerieService 4.1.2 crear metodo obtenerTodasLasTemporadas()/
+     recordar dinamico "/{}"
+    * no queremos devolver una Serie y si una lista de temporadas,
+    * el EpisodiosDTO no existia se creo el record ==> pagkage dto ==> record EpisodioDTO
+    * */
+    @GetMapping("/{id}/temporadas/todas")
+    public List<EpisodioDTO> obtenerTodasLasTemporadas(@PathVariable Long id) {
+        return servicio.obtenerTodasLasTemporadas(id);
+    }
+
+    /*Modulo 4.2.1
+    * se crea metodo obtenerTemporadasPorNumero() en SerieService */
+    @GetMapping("/{id}/temporadas/{numeroTemporada}")
+    public List<EpisodioDTO> obtenerTemporadasPorNumero(@PathVariable Long id,
+                                                        @PathVariable Long numeroTemporada){
+        return servicio.obtenerTemporadasPorNumero(id,numeroTemporada);
+    }
 
 
-    /*como todo estaba cargado, se hizo este metodo para ensayar la configurancio
-      del   spring-boot-devtools la dependencia y ya configurada en setting para que el
-      servidor tomcat autocargue los cambios y no se toque estar haciendo run*/
-   /* @GetMapping("/inicio")
-    public String muestraMensaje(){
-        return "provando liveReloadind";
-    }*/
+    /*Modulo 4.3.1
+    * se crea el metodo obtenerSeriesPorCategoria() en SerieService*/
+    @GetMapping("/categoria/{nombreGenero}")
+    public List<SerieDTO> obtenerSeriesPorCategoria(@PathVariable String nombreGenero) {
+        return servicio.obtenerSeriesPorCategoria(nombreGenero);
+
+    }
+
 }
+
+
+
